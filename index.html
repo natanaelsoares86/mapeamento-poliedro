@@ -341,6 +341,7 @@ pre.cfg{background:#0F2347;color:#CFE0F2;border-radius:12px;padding:14px;font-si
    um fluxo do Power Automate "Quando uma solicitação HTTP é recebida".
    Só funciona com o site hospedado fora do claude.ai (o claude.ai bloqueia envios
    para outros endereços). Vazio = usa o link pré-preenchido do Forms. */
+const MODE = "aluno";
 const SEND_ENDPOINT = "https://default9d8f511f260545ba92d8778751a27b.47.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/13/workflows/91cbf1e95444401ea5a43510bb06ce20/triggers/manual/paths/invoke?api-version=1";
 let sending=false,sendErr='';
 const FORMS_CONFIG = {
@@ -458,7 +459,7 @@ function go(i){if(i>S.step){for(let j=S.step;j<i;j++){const e=validate(STEPS[j].
 
 /* ===================== Render ===================== */
 function render(){
-  if(location.hash==='#coordenacao'){$('#app').innerHTML=vCoord();bindCoord();bindPainel();return}
+  if(MODE==='coord'){$('#app').innerHTML=vCoord();bindCoord();bindPainel();return}
   const st=STEPS[S.step],reach=(()=>{const f=firstInvalid();return f<0?STEPS.length-1:f})();
   const pct=Math.round(S.step/(STEPS.length-1)*100);
   $('#app').innerHTML=`<header class="top"><div class="top-in">
@@ -466,7 +467,7 @@ function render(){
     <nav class="steps" aria-label="Etapas">${STEPS.map((s,i)=>`<button class="st ${i===S.step?'on':''} ${i<S.step?'done':''}" data-go="${i}" ${i>Math.max(reach,S.step)?'disabled':''}><i>${i<S.step?'✓':i===0?'★':i}</i><span>${s.t}</span></button>`).join('')}</nav>
   </div><div class="bar"><b style="width:${pct}%"></b></div></header>
   <main id="main">${VIEWS[st.k]()}
-  <div class="foot">Colégio Poliedro · Vila Mariana · Suas respostas ficam salvas neste navegador até o envio. · <a href="#coordenacao">Área da coordenação</a></div></main>
+  <div class="foot">Colégio Poliedro · Vila Mariana · Suas respostas ficam salvas neste navegador até o envio.</div></main>
   ${S.step>0?`<div class="nav"><div class="nav-in">
     <button class="btn ghost" data-go="${S.step-1}">${svg(I.back)}Voltar</button>
     <div class="grow">${errMsg?`<div class="err-box" role="alert">${esc(errMsg)}</div>`:`Etapa ${S.step} de ${STEPS.length-1} · ${st.t}`}</div>
@@ -793,7 +794,7 @@ function vCoord(){
  const tabs=[['painel','Painel de respostas'],['ligacao','Ligação com o Forms']];
  return `<header class="top"><div class="top-in"><div class="brand"><img class="logo" src="${LOGO_IMG}" alt="Colégio Poliedro"><span class="bsep"></span><div>Coordenação<small>Mapeamento de Perfil</small></div></div>
   <nav class="steps" style="justify-content:center">${tabs.map(([k,t])=>`<button class="st ${CO.tab===k?'on':''}" data-cotab="${k}"><span style="display:inline">${t}</span></button>`).join('')}</nav>
-  <a class="btn sm ghost" href="#">Voltar ao formulário</a></div></header>
+  <a class="btn sm ghost" href="./">Abrir o formulário</a></div></header>
  <main>${CO.tab==='painel'?vPainel():vLig()}</main>`}
 
 /* Leitura da planilha exportada do Forms */
@@ -980,7 +981,7 @@ function bind(){
  $('#resetNo')?.addEventListener('click',()=>{confirmReset=false;render()});
  $('#resetYes')?.addEventListener('click',()=>{confirmReset=false;S=blank();save();render();window.scrollTo(0,0)});
 }
-window.addEventListener('hashchange',render);
+
 render();
 </script>
 </body>
